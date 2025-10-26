@@ -1,0 +1,7 @@
+[submodule "lib/glfw/src"]
+	path = lib/glfw/src
+	url = https://github.com/glfw/glfw
+[submodule "lib/cimgui/src"]
+	path = lib/cimgui/src
+	url = https://github.com/cimgui/cimgui
+	branch = docking_inter
