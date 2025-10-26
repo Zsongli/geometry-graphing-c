@@ -1,3 +1,6 @@
+#define CONCAT_IMPL(x, y) x##y
+#define CONCAT( x, y ) CONCAT_IMPL(x,y)
+
 #define INVOKE_CALLBACK(callback, ...) \
 	do { \
 		if (callback) { \
@@ -11,3 +14,9 @@
 		char** argv = __argv; \
 		return main_function(argc, argv); \
 	}
+
+#define DO_ONCE_BEGIN() _DO_ONCE_BEGIN(CONCAT(do_once_, __COUNTER__))
+#define _DO_ONCE_BEGIN(varname) static bool varname = true; if(varname) { varname = false;
+#define DO_ONCE_END() }
+
+#define IM_COL32(R,G,B,A)    (((ImU32)(A)<<24) | ((ImU32)(B)<<16) | ((ImU32)(G)<<8) | ((ImU32)(R)<<0))

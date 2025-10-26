@@ -17,6 +17,7 @@ workspace "Geometry Graphing"
 
 include "lib/glfw"
 include "lib/cimgui"
+include "lib/cimplot"
 
 project "GeometryGraphing"
    kind "WindowedApp"
@@ -34,10 +35,11 @@ project "GeometryGraphing"
       "lib/glfw/src/include",
       "lib/cimgui/src",
       "lib/cimgui/imgui",
-      "lib/cimgui/imgui/backends"
+      "lib/cimgui/imgui/backends",
+      "lib/cimplot/src"
    }
 
-   links { "cimgui", "glfw" }
+   links { "cimgui", "glfw", "cimplot" }
 
    defines { "CIMGUI_USE_GLFW", "CIMGUI_USE_OPENGL3", "CIMGUI_DEFINE_ENUMS_AND_STRUCTS", "APP_NAME=\"%{wks.name}\"" }
 

@@ -1,6 +1,6 @@
 #include "glfw_imgui_window.h"
 
-GLFWImGuiWindow* glfw_imgui_window_create(int width, int height, const char* title, ImGuiWindowCallback initialize_imgui_callback, ImGuiWindowCallback draw_callback) {
+GLFWImGuiWindow* glfw_imgui_window_create(int width, int height, const char* title, GLFWImGuiWindowCallback initialize_imgui_callback, GLFWImGuiWindowCallback draw_callback) {
 	GLFWImGuiWindow* this = malloc(sizeof(GLFWImGuiWindow));
 	if (!this) return NULL;
 
@@ -12,11 +12,19 @@ GLFWImGuiWindow* glfw_imgui_window_create(int width, int height, const char* tit
 		free(this);
 		return NULL;
 	}
-	INVOKE_CALLBACK(this->initialize_imgui_callack, this->imgui_context);
+	INVOKE_CALLBACK(this->initialize_imgui_callack, this->imgui_context, this->implot_context);
+
+	this->implot_context = ImPlot_CreateContext();
+	if (!this->implot_context) {
+		igDestroyContext(this->imgui_context);
+		free(this);
+		return NULL;
+	}
 
 	this->glfw_window = glfwCreateWindow(width, height, title, NULL, NULL);
 	if (!this->glfw_window) {
 		igDestroyContext(this->imgui_context);
+		ImPlot_DestroyContext(this->implot_context);
 		free(this);
 		return NULL;
 	}
@@ -28,6 +36,7 @@ GLFWImGuiWindow* glfw_imgui_window_create(int width, int height, const char* tit
 	if (!ImGui_ImplGlfw_InitForOpenGL(this->glfw_window, true)) {
 		glfwDestroyWindow(this->glfw_window);
 		igDestroyContext(this->imgui_context);
+		ImPlot_DestroyContext(this->implot_context);
 		free(this);
 		return NULL;
 	}
@@ -36,6 +45,7 @@ GLFWImGuiWindow* glfw_imgui_window_create(int width, int height, const char* tit
 		ImGui_ImplGlfw_Shutdown();
 		glfwDestroyWindow(this->glfw_window);
 		igDestroyContext(this->imgui_context);
+		ImPlot_DestroyContext(this->implot_context);
 		free(this);
 		return NULL;
 	}
@@ -45,6 +55,7 @@ GLFWImGuiWindow* glfw_imgui_window_create(int width, int height, const char* tit
 
 void _init_new_frame(GLFWImGuiWindow* this) {
 	igSetCurrentContext(this->imgui_context);
+	ImPlot_SetCurrentContext(this->implot_context);
 	glfwMakeContextCurrent(this->glfw_window);
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -52,19 +63,13 @@ void _init_new_frame(GLFWImGuiWindow* this) {
 }
 
 void _populate_draw_data(GLFWImGuiWindow* this) {
-	if (this->imgui_context->IO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-		int window_x, window_y;
-		glfwGetWindowPos(this->glfw_window, &window_x, &window_y);
-		igSetNextWindowPos((ImVec2) { (float)window_x, (float)window_y }, ImGuiCond_Always, (ImVec2) { 0, 0 });
-	}
-	else {
-		igSetNextWindowPos((ImVec2) { 0, 0 }, ImGuiCond_Always, (ImVec2) { 0, 0 });
-	}
-	igSetNextWindowSize((ImVec2) { this->imgui_context->IO.DisplaySize.x, this->imgui_context->IO.DisplaySize.y }, ImGuiCond_Always);
 
-	igBegin("Main", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking);
-	INVOKE_CALLBACK(this->draw_callback, this->imgui_context);
-	igEnd();
+	// enable docking on the entire viewport so we don't have to create a separate window for it
+	igPushStyleColor_Vec4(ImGuiCol_DockingEmptyBg, (ImVec4) { 1.f, 1.f, 1.f, 1.f });
+	igDockSpaceOverViewport(0, NULL, ImGuiDockNodeFlags_None, NULL);
+	igPopStyleColor(1);
+
+	INVOKE_CALLBACK(this->draw_callback, this->imgui_context, this->implot_context);
 
 	igRender();
 }
@@ -97,11 +102,13 @@ void glfw_imgui_window_run_main_loop(GLFWImGuiWindow* this) {
 
 void glfw_imgui_window_destroy(GLFWImGuiWindow* this) {
 	igSetCurrentContext(this->imgui_context);
+	ImPlot_SetCurrentContext(this->implot_context);
 	glfwMakeContextCurrent(this->glfw_window);
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	glfwDestroyWindow(this->glfw_window);
+	ImPlot_DestroyContext(this->implot_context);
 	igDestroyContext(this->imgui_context);
 	free(this);
 }
