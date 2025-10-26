@@ -5,3 +5,6 @@
 	path = lib/cimgui/src
 	url = https://github.com/cimgui/cimgui
 	branch = docking_inter
+[submodule "lib/cimplot/src"]
+	path = lib/cimplot/src
+	url = https://github.com/cimgui/cimplot
