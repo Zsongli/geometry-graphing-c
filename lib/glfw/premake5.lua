@@ -28,7 +28,6 @@ project "glfw"
     }
 
     filter "system:windows"
-        systemversion "latest"
         staticruntime "On"
         defines { "_GLFW_WIN32", "_CRT_SECURE_NO_WARNINGS" }
         files {

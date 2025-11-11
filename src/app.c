@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 bool initialized = false;
-bool app_init() {
+bool app_init(void) {
 	assert(!initialized && "app_init called after successful initialization");
 
 	if (!glfwInit()) return false;
@@ -14,6 +14,6 @@ bool app_init() {
 	return true;
 }
 
-void app_destroy() {
+void app_destroy(void) {
 	glfwTerminate();
 }

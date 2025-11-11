@@ -1,4 +1,5 @@
-# Geometry Graphing
+![PlaneLab logo](./assets/plane_lab_logo.svg)
+# PlaneLab
 A simple C application for graphing geometric shapes using ImGui. Made for a school assignment.
 
 ## Preview
@@ -30,7 +31,8 @@ A simple C application for graphing geometric shapes using ImGui. Made for a sch
 - A C compiler
 - A C++ compiler (for building dependencies)
 - [GLFW](https://www.glfw.org/) (included as a submodule)
-- [CImGui](https://github.com/cimgui/cimgui) (included as a submodule)
+- [cimgui](https://github.com/cimgui/cimgui) (included as a submodule)
+- [cimplot](https://github.com/cimplot/cimplot) (included as a submodule)
 - OpenGL development libraries
 
 ### Instructions

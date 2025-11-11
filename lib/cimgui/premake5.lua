@@ -19,7 +19,7 @@ project "cimgui"
         lib_root .. "/cimgui.cpp",
         lib_root .. "/imgui/*.cpp",
         lib_root .. "/imgui/backends/imgui_impl_glfw.cpp",
-        lib_root .. "/imgui/backends/imgui_impl_opengl3.cpp"
+        lib_root .. "/imgui/backends/imgui_impl_opengl3.cpp",
     }
 
     defines {
@@ -38,3 +38,5 @@ project "cimgui"
     filter "system:linux"
         links { "GL" }
         defines { "IMGUI_IMPL_API=extern \"C\"" }
+    
+    filter {}

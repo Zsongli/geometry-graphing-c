@@ -1,6 +1,6 @@
 
-workspace "Geometry Graphing"
-   filename "GeometryGraphing"
+workspace "PlaneLab"
+   filename "PlaneLab"
    configurations { "Debug", "Release" }
    platforms { "x64" }
    defaultplatform "x64"
@@ -15,11 +15,12 @@ workspace "Geometry Graphing"
    filter "platforms:x64"
       architecture "x86_64"
 
+include "tools/embed_resource.lua"
 include "lib/glfw"
 include "lib/cimgui"
 include "lib/cimplot"
 
-project "GeometryGraphing"
+project "PlaneLab"
    kind "WindowedApp"
 
    language "C"
@@ -29,13 +30,13 @@ project "GeometryGraphing"
    objdir "build/obj/%{cfg.platform}/%{cfg.buildcfg}"
    targetdir "build/bin/%{cfg.platform}/%{cfg.buildcfg}"
 
+   embed_resources("resources", "src/resources")
    files { "src/**.h", "src/**.c" }
 
    includedirs {
       "lib/glfw/src/include",
       "lib/cimgui/src",
-      "lib/cimgui/imgui",
-      "lib/cimgui/imgui/backends",
+      "lib/cimgui/src_local/include",
       "lib/cimplot/src"
    }
 

@@ -16,6 +16,6 @@ typedef struct {
 	ImPlotContext* implot_context;
 } GLFWImGuiWindow;
 
-GLFWImGuiWindow* glfw_imgui_window_create(int width, int height, const char* title, GLFWImGuiWindowCallback initialize_imgui_callback, GLFWImGuiWindowCallback draw_callback);
+GLFWImGuiWindow* glfw_imgui_window_new(int width, int height, const char* title, GLFWImGuiWindowCallback initialize_imgui_callback, GLFWImGuiWindowCallback draw_callback);
 void glfw_imgui_window_run_main_loop(GLFWImGuiWindow* this);
-void glfw_imgui_window_destroy(GLFWImGuiWindow* this);
+void glfw_imgui_window_delete(GLFWImGuiWindow* this);

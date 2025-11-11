@@ -1,6 +1,6 @@
 #include "glfw_imgui_window.h"
 
-GLFWImGuiWindow* glfw_imgui_window_create(int width, int height, const char* title, GLFWImGuiWindowCallback initialize_imgui_callback, GLFWImGuiWindowCallback draw_callback) {
+GLFWImGuiWindow* glfw_imgui_window_new(int width, int height, const char* title, GLFWImGuiWindowCallback initialize_imgui_callback, GLFWImGuiWindowCallback draw_callback) {
 	GLFWImGuiWindow* this = malloc(sizeof(GLFWImGuiWindow));
 	if (!this) return NULL;
 
@@ -100,7 +100,7 @@ void glfw_imgui_window_run_main_loop(GLFWImGuiWindow* this) {
 	}
 }
 
-void glfw_imgui_window_destroy(GLFWImGuiWindow* this) {
+void glfw_imgui_window_delete(GLFWImGuiWindow* this) {
 	igSetCurrentContext(this->imgui_context);
 	ImPlot_SetCurrentContext(this->implot_context);
 	glfwMakeContextCurrent(this->glfw_window);
