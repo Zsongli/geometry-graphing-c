@@ -3,6 +3,7 @@
 #include "utils.h"
 #include <imgui_macros.h>
 #include <string.h>
+#include <stdlib.h>
 
 void _initialize_imgui_io_config(ImGuiContext* imgui_context) {
 	ImGuiIO* const io = igGetIO_ContextPtr(imgui_context);
@@ -15,11 +16,11 @@ void _initialize_imgui_io_config(ImGuiContext* imgui_context) {
 	io->IniFilename = NULL;
 
 	// this is so stupid
-	char* droid_sans_ttf_data_copy = malloc(IM_ARRAYSIZE(RESOURCE_DATA(DROID_SANS_TTF)));
+	char* droid_sans_ttf_data_copy = malloc(RESOURCE_SIZE(DROID_SANS_TTF));
 	if (droid_sans_ttf_data_copy == NULL) return;
-	memcpy(droid_sans_ttf_data_copy, RESOURCE_DATA(DROID_SANS_TTF), IM_ARRAYSIZE(RESOURCE_DATA(DROID_SANS_TTF)));
+	memcpy(droid_sans_ttf_data_copy, RESOURCE_DATA(DROID_SANS_TTF), RESOURCE_SIZE(DROID_SANS_TTF));
 	
-	ImFontAtlas_AddFontFromMemoryTTF(io->Fonts, droid_sans_ttf_data_copy, IM_ARRAYSIZE(RESOURCE_DATA(DROID_SANS_TTF)), 20.f, NULL, NULL);
+	ImFontAtlas_AddFontFromMemoryTTF(io->Fonts, droid_sans_ttf_data_copy, RESOURCE_SIZE(DROID_SANS_TTF), 20.f, NULL, NULL);
 }
 
 void _initialize_imgui_style(ImGuiContext* imgui_context) {
@@ -29,15 +30,8 @@ void _initialize_imgui_style(ImGuiContext* imgui_context) {
 	imgui_context->Style.FrameBorderSize = 1.f;
 }
 
-void _initialize_imgui(ImGuiContext* imgui_context, ImPlotContext* implot_context) {
-	DISCARD(implot_context);
-	_initialize_imgui_io_config(imgui_context);
-	_initialize_imgui_style(imgui_context);
-}
-
-void _draw(ImGuiContext* imgui_context, ImPlotContext* implot_context) {
-	DISCARD(implot_context);
-	DISCARD(imgui_context);
+void main_window_on_imgui_draw(void* _this) {
+	MainWindow* this = _this;
 	/*DO_ONCE({
 		igDockBuilderRemoveNode(0);
 		igDockBuilderAddNode(0, ImGuiDockNodeFlags_DockSpace);
@@ -45,6 +39,16 @@ void _draw(ImGuiContext* imgui_context, ImPlotContext* implot_context) {
 		igDockBuilderFinish(0);
 		});*/
 
+	ImGuiViewport* main_viewport = igGetMainViewport();
+	igPushStyleColor_Vec4(ImGuiCol_DockingEmptyBg, (ImVec4) { 1.f, 1.f, 1.f, 1.f });
+	igDockSpaceOverViewport(0, main_viewport, ImGuiDockNodeFlags_None, NULL);
+	igPopStyleColor(1);
+
+	/*char dockspace_window_label[32];
+	sprintf_s(dockspace_window_label, IM_ARRAYSIZE(dockspace_window_label), "WindowOverViewport_%08X", main_viewport->ID);
+
+	ImGuiWindow* dockspace_window = igFindWindowByName(dockspace_window_label);
+	ImDrawList_AddImage(dockspace_window->DrawList,)*/
 
 	igBegin("Graph", NULL, ImGuiWindowFlags_None);
 	ImPlot_SetNextAxesLimits(-100.0, 100.0, -100.0, 100.0, ImPlotCond_Once);
@@ -61,25 +65,24 @@ void _draw(ImGuiContext* imgui_context, ImPlotContext* implot_context) {
 	igEnd();
 }
 
-MainWindow* main_window_new(int width, int height, const char* title) {
-	MainWindow* this = malloc(sizeof(MainWindow));
-	if (!this) return NULL;
+WindowWithImGuiVTable main_window_vtable = {
+	.base = {
+		.on_draw = window_with_imgui_on_draw,
+	},
+	.on_imgui_draw = main_window_on_imgui_draw,
+};
 
-	this->glfw_imgui_window = glfw_imgui_window_new(width, height, title, _initialize_imgui, _draw);
-	if (!this->glfw_imgui_window) {
-		free(this);
-		return NULL;
-	}
+bool main_window_new(MainWindow* this, int width, int height, const char* title) {
 
-	return this;
+	if (!window_with_imgui_new(&this->base, width, height, title)) return false;
+	this->base.base.vtable = (WindowVTable*)& main_window_vtable;
+
+	_initialize_imgui_io_config(this->base.imgui_context);
+	_initialize_imgui_style(this->base.imgui_context);
+
+	return true;
 }
 
 void main_window_delete(MainWindow* this) {
-	//ImFontAtlas_RemoveFont(this->glfw_imgui_window->imgui_context->IO.Fonts, this->font);
-	glfw_imgui_window_delete(this->glfw_imgui_window);
-	free(this);
-}
-
-void main_window_run_main_loop(MainWindow* this) {
-	glfw_imgui_window_run_main_loop(this->glfw_imgui_window);
+	window_with_imgui_delete(&this->base);
 }

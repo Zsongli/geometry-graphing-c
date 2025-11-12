@@ -1,5 +1,4 @@
 ![PlaneLab logo](./assets/planelab_logo.svg)
-# PlaneLab
 A simple C application for graphing geometric shapes using ImGui. Made for a school assignment.
 
 ## Preview

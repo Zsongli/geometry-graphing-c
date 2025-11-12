@@ -9,9 +9,11 @@ function embed_resources(input_dir, output_dir)
 
     index_out:write("// Auto-generated resource index\n\n")
     index_out:write("#pragma once\n\n")
-    index_out:write("#define RESOURCE_DATA(index) (_resources[index])\n\n")
-
-    local resource_array = "static const unsigned char* _resources[] = {\n"
+    index_out:write("#define RESOURCE_DATA(index) (_resource_data[index])\n")
+    index_out:write("#define RESOURCE_SIZE(index) (_resource_sizes[index])\n\n")
+    
+    local resource_data_array = "static const unsigned char* _resource_data[] = {\n"
+    local resource_size_array = "static const size_t _resource_sizes[] = {\n"
 
     local files = os.matchfiles(input_dir .. "/*")
     for i, filepath in ipairs(files) do
@@ -19,18 +21,21 @@ function embed_resources(input_dir, output_dir)
         local filename_snake_case = to_snake_case(filename)
         local outname = filename_snake_case .. ".h"
         local define_name = filename_snake_case:upper()
-        local varname = "_" ..define_name .. "_DATA"
+        local varname = define_name .. "_DATA"
 
         local outfile = path.join(output_dir, outname)
         print(string.format("Embedding resource %s -> %s", filename, outfile))
         embed_resource(filepath, outfile, varname)
 
         index_out:write(string.format("#include \"%s\"\n", outname))
-        index_out:write(string.format("#define %s %d\n", define_name, i-1))
-        resource_array = resource_array .. string.format("    %s,\n", varname)
+        index_out:write(string.format("#define %s %d\n\n", define_name, i-1))
+        resource_data_array = resource_data_array .. string.format("    %s,\n", varname)
+        resource_size_array = resource_size_array .. string.format("    sizeof(%s),\n", varname)
     end
-    resource_array = resource_array .. "};\n"
-    index_out:write("\n" .. resource_array)
+    resource_data_array = resource_data_array .. "};\n"
+    resource_size_array = resource_size_array .. "};\n"
+    index_out:write(resource_data_array)
+    index_out:write("\n" .. resource_size_array)
     index_out:close()
 end
 
