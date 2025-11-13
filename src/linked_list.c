@@ -1,5 +1,6 @@
 #include "linked_list.h"
 #include <assert.h>
+//#include <debugmalloc.h>
 
 LinkedList* linked_list_new(void) {
 	LinkedList* list = (LinkedList*)malloc(sizeof(LinkedList));

@@ -19,6 +19,8 @@ include "tools/embed_resource.lua"
 include "lib/glfw"
 include "lib/cimgui"
 include "lib/cimplot"
+include "lib/nfd"
+include "lib/stb"
 
 project "PlaneLab"
    kind "WindowedApp"
@@ -37,10 +39,13 @@ project "PlaneLab"
       "lib/glfw/src/include",
       "lib/cimgui/src",
       "lib/cimgui/src_local/include",
-      "lib/cimplot/src"
+      "lib/cimplot/src",
+      "lib/nfd/src/src/include",
+      "lib/stb/src",
+      "lib/debugmalloc/src_local/include"
    }
 
-   links { "cimgui", "glfw", "cimplot" }
+   links { "cimgui", "glfw", "cimplot", "nfd", "stb" }
 
    defines { "CIMGUI_USE_GLFW", "CIMGUI_USE_OPENGL3", "CIMGUI_DEFINE_ENUMS_AND_STRUCTS", "APP_NAME=\"%{wks.name}\"" }
 

@@ -15,8 +15,11 @@ bool window_new(Window* this, int width, int height, const char* title) {
 	this->vtable = &window_default_vtable;
 	
 	this->glfw_window = glfwCreateWindow(width, height, title, NULL, NULL);
-	if (!this->glfw_window) return false;
-	
+	if (!this->glfw_window) {
+		perror("Failed to create GLFW window\n");
+		return false;
+	}
+
 	return true;
 }
 

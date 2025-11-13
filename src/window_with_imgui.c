@@ -43,14 +43,23 @@ WindowWithImGuiVTable window_with_imgui_default_vtable = {
 
 bool window_with_imgui_new(WindowWithImGui* this, int width, int height, const char* title) {
 
-	if(!window_new(&this->base, width, height, title)) goto fail_window;
+	if (!window_new(&this->base, width, height, title)) {
+		perror("Failed to create base window\n");
+		goto fail_window;
+	}
 	this->base.vtable = (WindowVTable*)&window_with_imgui_default_vtable;
 
 	this->imgui_context = igCreateContext(NULL);
-	if (!this->imgui_context) goto fail_imgui;
+	if (!this->imgui_context) {
+		perror("Failed to create ImGui context\n");
+		goto fail_imgui;
+	}
 
 	this->implot_context = ImPlot_CreateContext();
-	if (!this->implot_context) goto fail_implot;
+	if (!this->implot_context) {
+		perror("Failed to create ImPlot context\n");
+		goto fail_implot;
+	}
 
 	glfwSetWindowSizeLimits(this->base.glfw_window, 200, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
 	glfwMakeContextCurrent(this->base.glfw_window);
@@ -58,9 +67,15 @@ bool window_with_imgui_new(WindowWithImGui* this, int width, int height, const c
 
 	igSetCurrentContext(this->imgui_context);
 
-	if (!ImGui_ImplGlfw_InitForOpenGL(this->base.glfw_window, true)) goto fail_glfw;
+	if (!ImGui_ImplGlfw_InitForOpenGL(this->base.glfw_window, true)) {
+		perror("Failed to initialize ImGui GLFW backend\n");
+		goto fail_glfw;
+	}
 
-	if (!ImGui_ImplOpenGL3_Init(NULL)) goto fail_opengl;
+	if (!ImGui_ImplOpenGL3_Init(NULL)) {
+		perror("Failed to initialize ImGui OpenGL3 backend\n");
+		goto fail_opengl;
+	}
 
 	return true;
 
