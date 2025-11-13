@@ -8,3 +8,9 @@
 [submodule "lib/cimplot/src"]
 	path = lib/cimplot/src
 	url = https://github.com/cimgui/cimplot
+[submodule "lib/nfd/src"]
+	path = lib/nfd/src
+	url = https://github.com/mlabbe/nativefiledialog
+[submodule "lib/stb/src"]
+	path = lib/stb/src
+	url = https://github.com/nothings/stb
